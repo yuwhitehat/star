@@ -1,0 +1,10 @@
+Spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://rm-uf64xzkt5x42bs9ib3o.mysql.rds.aliyuncs.com:3306/liuziyu_test
+    username:
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update  # create每次运行都删除原有表创建新表,update不用每次创建新表
+    show-sql: true # 打印SQL语句
