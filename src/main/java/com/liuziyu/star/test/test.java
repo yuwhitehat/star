@@ -16,41 +16,83 @@ import java.util.stream.Collectors;
 
 public class test {
     public static void main(String[] args) {
-       /* String[] names = {"ABC", "XYZ", "zoo"};
-        String s = names[1];
-        names[1] = "cat";
-        System.out.println(s); // s是"XYZ"还是"cat"?*/
-        /*int a = 2;
-        switch (a) {
-            case 0:
-            case 1:
-                System.out.println("dddd");
-                break;
-            case 2:
-                System.out.println("dddwwd");
-                break;
-            case 3:
-                System.out.println("ddddyy");
-                break;
-            default:
-                System.out.println("ddd22d");
-                break;
-        }*/
-        /*int[] ns = { 28, 12, 89, 73, 65, 18, 96, 50, 8, 36 };
-        // 排序前:
-        System.out.println(Arrays.toString(ns));
-        for (int i = 0; i < ns.length - 1; i++) {
-            for (int j = 0; j < ns.length - i - 1; j++) {
-                if (ns[j] > ns[j+1]) {
-                    // 交换ns[j]和ns[j+1]:
-                    int tmp = ns[j];
-                    ns[j] = ns[j+1];
-                    ns[j+1] = tmp;
-                }
-            }
+        int rangeStart = 30;
+        int rangeEnd = 60;
+
+        if (rangeStart < 0 || rangeEnd < 0) {
+            System.out.println("数据范围要为非负数！");
         }
-        // 排序后:
-        System.out.println(Arrays.toString(ns));*/
+        int mod = rangeEnd - rangeStart;
+        if (mod <= 1) {
+            System.out.println("非法的数字范围");
+        }
+        Scanner inPlayCount = new Scanner(System.in);
+        Scanner inGuessNum = new Scanner(System.in);
+        // 是否退出游戏
+        boolean isExit = false;
+
+        // 共计玩了多少次
+        int totalCount = 0;
+        // 猜对的次数
+        int successCount = 0;
+        while (!isExit) {
+            // 生成随机数
+            int bigRandom = (int) (Math.random() * (rangeEnd * 100));
+            int numberToGuess = (bigRandom % mod) + rangeStart;
+            if (numberToGuess <= rangeStart) {
+                numberToGuess = rangeStart + 1;
+            }
+            if (numberToGuess >= rangeEnd) {
+                numberToGuess = rangeEnd - 1;
+            }
+
+            // 判断用户是否一直猜错
+            boolean isAlwaysFail = true;
+
+            // 猜测次数
+            System.out.println("游戏开始，请输入猜测次数：");
+            int playCount = inPlayCount.nextInt();
+            if (playCount <= 0) {
+                System.out.println("猜测次数必须为正整数！请重新输入：");
+                playCount = inPlayCount.nextInt();
+            }
+
+            while (playCount > 0) {
+                System.out.println("如果想要退出游戏，请输入-1。");
+                System.out.println("您有" + playCount + "次机会, 请输入一个" + rangeStart + "到" + rangeEnd + "之间的整数：");
+                int guessNum = inGuessNum.nextInt();
+
+                // 判断用户是否想要退出游戏
+                if (guessNum < 0) {
+                    System.out.println("您已退出游戏");
+                    isExit = true;
+                    break;
+                }
+
+                // 结果判断
+                if (guessNum > numberToGuess) {
+                    System.out.println("啊哦~猜测错误~");
+                    System.out.println("猜测的数字比正确结果大");
+                } else if (guessNum < numberToGuess) {
+                    System.out.println("啊哦~猜测错误~");
+                    System.out.println("猜测的数字比正确结果小");
+                } else if (guessNum == numberToGuess) {
+                    System.out.println("恭喜你，猜测正确！");
+                    isAlwaysFail = false;
+                    successCount++;
+                    break;
+                }
+                playCount--;
+            }
+            // 如果用户一直猜错，告诉用户正确答案
+            if (isAlwaysFail) {
+                System.out.println("本轮正确结果为：" + numberToGuess);
+            }
+            if (!isExit) {
+                totalCount++;
+            }
+            System.out.println("您已经玩了" + totalCount + "次，猜对了" + successCount + "次");
+        }
 
     }
 
@@ -199,7 +241,7 @@ public class test {
         // 打印26个大写字母 ++i和i++是一样的，因为并不需要用到i的值
         for (int i = 0; i < 26; i++) {
             // 1、(char)num++强制类型转换 2、num++ 自增 先使用num本身的值再加1
-            System.out.println(num + "\t" + ((char)(num++)));
+            System.out.println(num + "\t" + ((char) (num++)));
         }
     }
 
@@ -228,6 +270,81 @@ public class test {
         } while (false);
     }
 
+    /**
+     * switch 语句
+     * 1.case语句里必须有break，否则会一直执行下去直到遇到break语句或者default
+     * 2.default语句可选
+     * 3.同一个switch代码块里不能声明名称相同的变量
+     */
+    @Test
+    public void test8() {
+        int n = 1;
+        String str = n + "对应的中文数字是：";
+
+        switch (n) {
+            case 1:
+                str += "壹";
+                break;
+            case 2:
+                str += "贰";
+            default:
+                System.out.println("错误的值");
+
+        }
+    }
+
+    /**
+     * 一个猜数字的小游戏
+     * 每次生成一个固定范围的随机数，选择猜测的次数
+     * 注：junit单元测试不支持控制台输入，故需要写在main()方法里，最新版在上面的main()方法里
+     */
+    @Test
+    public void playGame() {
+
+        int rangeStart = 30;
+        int rangeEnd = 60;
+
+        if (rangeStart < 0 || rangeEnd < 0) {
+            System.out.println("数据范围要为非负数！");
+        }
+        int mod = rangeEnd - rangeStart;
+        if (mod <= 1) {
+            System.out.println("非法的数字范围");
+        }
+        Scanner inPlayCount = new Scanner(System.in);
+        Scanner inGuessNum = new Scanner(System.in);
+        while (true) {
+            int bigRandom = (int) (Math.random() * (rangeEnd * 100));
+            int numberToGuess = (bigRandom % mod) + rangeStart;
+            if (numberToGuess <= rangeStart) {
+                numberToGuess = rangeStart + 1;
+            }
+            if (numberToGuess >= rangeEnd) {
+                numberToGuess = rangeEnd - 1;
+            }
+            // 猜测次数
+            System.out.println("请输入猜测次数：");
+            int playCount = inPlayCount.nextInt();
+
+            while (playCount > 0) {
+                System.out.println("剩余次数为" + playCount + "次, 请输入一个" + rangeStart + "到" + rangeEnd + "之间的整数：");
+                int guessNum = inGuessNum.nextInt();
+
+                if (guessNum > numberToGuess) {
+                    System.out.println("啊哦~猜测错误~");
+                    System.out.println("猜测的数字比正确结果大");
+                } else if (guessNum < numberToGuess) {
+                    System.out.println("啊哦~猜测错误~");
+                    System.out.println("猜测的数字比正确结果小");
+                } else if (guessNum == numberToGuess) {
+                    System.out.println("恭喜你，猜测正确！");
+                    break;
+                }
+
+                playCount--;
+            }
+        }
+    }
 
 
 }
