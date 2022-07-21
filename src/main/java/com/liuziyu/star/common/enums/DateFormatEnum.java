@@ -1,4 +1,4 @@
-package com.liuziyu.star.common;
+package com.liuziyu.star.common.enums;
 
 /**
  * 时间格式化枚举

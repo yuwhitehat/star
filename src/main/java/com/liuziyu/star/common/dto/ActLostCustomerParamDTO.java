@@ -1,4 +1,4 @@
-package com.liuziyu.star.common;
+package com.liuziyu.star.common.dto;
 
 import lombok.Data;
 

@@ -1,13 +1,14 @@
 package com.liuziyu.star.test;
 
 import com.google.common.collect.Lists;
-import com.liuziyu.star.common.ActLostCustomerParamDTO;
+import com.liuziyu.star.common.dto.ActLostCustomerParamDTO;
 import com.liuziyu.star.common.CommonConstant;
-import com.liuziyu.star.common.DateFormatEnum;
-import com.liuziyu.star.common.UserInfo;
+import com.liuziyu.star.common.enums.DateFormatEnum;
+import com.liuziyu.star.common.dto.UserInfo;
 import com.liuziyu.star.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -344,6 +345,80 @@ public class test {
                 playCount--;
             }
         }
+    }
+
+    /**
+     * 数组之找出最大成绩
+     */
+    @Test
+    public void test10() {
+        int yuwen = 0;
+        int shuxuan = 1;
+        int yingyu = 2;
+        int wuli = 3;
+        int huaxue = 4;
+        int shengwu = 5;
+
+        int totalScore = 6;
+        double[] scores = new double[totalScore];
+
+        String[] scoreNames = new String[totalScore];
+        scoreNames[yuwen] = "语文";
+        scoreNames[shuxuan] = "数学";
+        scoreNames[yingyu] = "英语";
+        scoreNames[wuli] = "物理";
+        scoreNames[huaxue] = "化学";
+        scoreNames[shengwu] = "生物";
+
+        // 考试成绩赋值
+        for (int i = 0; i < totalScore; i++) {
+            // 成绩随机，范围在80到100之间
+            double score = 80 + Math.random() * 20;
+            scores[i] = score;
+            System.out.println(scoreNames[i] + "成绩为：" + scores[i]);
+        }
+        // 记录最大成绩
+        double maxScore = 0;
+        // 记录下标值
+        int maxScoreIndex = 0;
+        // 对成绩进行遍历，找出最大成绩
+        for (int i = 0; i < totalScore; i++) {
+            if (scores[i] > maxScore) {
+                maxScore = scores[i];
+                maxScoreIndex = i;
+            }
+        }
+        System.out.println(scoreNames[maxScoreIndex] + "成绩最高，为" + maxScore);
+    }
+
+    @Test
+    public void test11() {
+        List<String> goods = new ArrayList<>();
+        /*goods.add("货物1");
+        goods.add("货物2");*/
+
+        List<String> names = new ArrayList<>();
+        names.add("巧心脆");
+        /*names.add("碧根果");
+        names.add("矿泉水");*/
+
+        List<String> foods = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(names)) {
+            return;
+        }
+        names.forEach(item -> {
+            if (!CollectionUtils.isEmpty(goods)) {
+                goods.forEach(good -> {
+                    foods.add(item);
+                });
+            } else {
+                foods.add(item);
+            }
+        });
+        System.out.println("foods=" + foods);
+        String name = StringUtils.join(names.toArray(), '/');
+        System.out.println("list转String结果：" + name);
     }
 
 
