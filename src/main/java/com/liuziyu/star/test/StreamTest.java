@@ -31,6 +31,7 @@ public class StreamTest {
         // 使用groupingBy对key进行分组
         Map<String, List<Parent<String, String>>> resultMap = datas.stream()
                 .collect(Collectors.groupingBy(Parent::getKey, Collectors.toList()));
+        System.out.println(resultMap.get("June"));
         resultMap.forEach((key, item) -> {
             System.out.println("key:" + key + " Object:" + item);
         });

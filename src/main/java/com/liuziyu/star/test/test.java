@@ -399,8 +399,8 @@ public class test {
 
         List<String> names = new ArrayList<>();
         names.add("巧心脆");
-        /*names.add("碧根果");
-        names.add("矿泉水");*/
+        names.add("碧根果");
+        names.add("矿泉水");
 
         List<String> foods = new ArrayList<>();
 
@@ -417,8 +417,15 @@ public class test {
             }
         });
         System.out.println("foods=" + foods);
-        String name = StringUtils.join(names.toArray(), '/');
+        String name = StringUtils.join(names.toArray(), "/");
         System.out.println("list转String结果：" + name);
+
+        String stringTest = "成品";
+        String stringTest2 = "充电博；小柜机";
+        List<String> stringList = Arrays.asList(stringTest.split("；"));
+        List<String> stringList2 = Arrays.asList(stringTest2.split("；"));
+        System.out.println("String转list结果1：" + JsonUtil.toString(stringList));
+        System.out.println("String转list结果2：" + JsonUtil.toString(stringList2));
     }
 
 
