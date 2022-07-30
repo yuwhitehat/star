@@ -417,7 +417,8 @@ public class test {
             }
         });
         System.out.println("foods=" + foods);
-        String name = StringUtils.join(names.toArray(), "/");
+        List<String> names2 = new ArrayList<>();
+        String name = StringUtils.join(names2.toArray(), "/");
         System.out.println("list转String结果：" + name);
 
         String stringTest = "成品";
