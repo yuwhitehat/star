@@ -429,5 +429,60 @@ public class test {
         System.out.println("String转list结果2：" + JsonUtil.toString(stringList2));
     }
 
+    @Test
+    public void test12() {
+        List<String> orderNoList = new ArrayList<>();
+        orderNoList.add("NO123");
+        orderNoList.add("NO123");
+        orderNoList.add("NO124");
+        orderNoList.add("NO135");
+
+        orderNoList.stream().distinct().forEach(orderNo -> {
+            System.out.println(orderNo);
+        });
+        System.out.println("---------");
+        orderNoList.forEach(orderNo -> {
+            System.out.println(orderNo);
+        });
+    }
+
+    @Test
+    public void test13() {
+
+        String time = "1970-01-01 00:00:00";
+        LocalDateTime localDateTime = DateFormatUtil.parseStringToLocalDateTime(time, DateFormatEnum.YYYYMMDD_HHMMSS_LINE.getCode());
+        System.out.println(localDateTime);
+    }
+
+    /**
+     * 关于在for循环内部捕获异常并抛出是否会导致for循环停止的测试
+     * 结果：
+     * 1.捕获了异常不抛出 for循环会继续执行
+     * 2.捕获了异常抛出 for循环会直接结束
+     */
+    @Test
+    public void test14() {
+        print(6);
+    }
+
+    public void print(int limit) {
+        try {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    if (i > limit) {
+                        throw new Exception();
+                    }
+                    System.out.println("打印" + i);
+                } catch (Exception e) {
+                    System.out.println("打印失败" + i);
+                    throw e;
+                }
+            }
+            System.out.println("循环结束");
+        } catch (Exception e) {
+            System.out.println("再次捕获");
+        }
+    }
+
 
 }

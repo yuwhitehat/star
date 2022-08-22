@@ -1,11 +1,14 @@
 package com.liuziyu.star.common.enums;
 
+import lombok.Getter;
+
 /**
  * 时间格式化枚举
  *
  * @author DavidYun (贠书谦)
  * @date 2018/7/2
  */
+@Getter
 public enum DateFormatEnum {
 
     YYYY("YYYY"),

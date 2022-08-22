@@ -9,6 +9,10 @@ import java.util.Scanner;
 /**
  * 小超市的运行
  *
+ * 调试：1.执行任意代码之Evaluate Expression:在对话框输入代码，直接执行看结果值
+ * 2.条件断点：给断点设置条件，只有满足条件时，程序才会在该断点停住
+ * 3.step into 进入到方法内部 step out回到方法调用的地方
+ *
  * @author LiuZiyu
  * @date 2022/07/30 9:39
  */
