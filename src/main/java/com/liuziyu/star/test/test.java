@@ -6,6 +6,7 @@ import com.liuziyu.star.common.CommonConstant;
 import com.liuziyu.star.common.enums.DateFormatEnum;
 import com.liuziyu.star.common.dto.UserInfo;
 import com.liuziyu.star.util.JsonUtil;
+import jdk.internal.org.objectweb.asm.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
@@ -458,7 +459,7 @@ public class test {
      * 关于在for循环内部捕获异常并抛出是否会导致for循环停止的测试
      * 结果：
      * 1.捕获了异常不抛出 for循环会继续执行
-     * 2.捕获了异常抛出 for循环会直接结束
+     * 2.捕获了异常再抛出 for循环会直接结束
      */
     @Test
     public void test14() {
@@ -482,6 +483,14 @@ public class test {
         } catch (Exception e) {
             System.out.println("再次捕获");
         }
+    }
+
+    @Test
+    public void test15() {
+        String code = "[" + 1002 + "," + 1003 + "]";
+        List<String> codeList = JsonUtil.toBean(code, new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {
+        });
+        System.out.println(codeList);
     }
 
 
