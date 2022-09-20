@@ -3,7 +3,7 @@ package com.liuziyu.star.controller.leetcode;
 import com.liuziyu.star.entity.leetcode.ListNode;
 
 /**
- * 分割链表
+ * 分隔链表
  * https://leetcode.cn/problems/partition-list/
  *
  * @author LiuZiyu

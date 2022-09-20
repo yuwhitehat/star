@@ -12,6 +12,14 @@ import java.util.PriorityQueue;
  * @date 2022/09/08 18:28
  */
 public class Solution3 {
+    /**
+     * 1.虚拟头结点
+     * 2.使用优先级队列 最小堆 用来找到K个链表中最小的值
+     * 3.获取最小节点接在虚拟头结点后面
+     * 4.
+     * @param lists
+     * @return
+     */
     public ListNode mergeKLists(ListNode[] lists) {
         if (lists.length == 0) return null;
         // 虚拟头结点
