@@ -1,19 +1,20 @@
 package com.liuziyu.star.test;
 
 import com.google.common.collect.Lists;
-import com.liuziyu.star.common.dto.ActLostCustomerParamDTO;
 import com.liuziyu.star.common.CommonConstant;
-import com.liuziyu.star.common.enums.DateFormatEnum;
+import com.liuziyu.star.common.dto.ActLostCustomerParamDTO;
 import com.liuziyu.star.common.dto.UserInfo;
+import com.liuziyu.star.common.enums.DateFormatEnum;
 import com.liuziyu.star.util.JsonUtil;
-import jdk.internal.org.objectweb.asm.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class test {
@@ -493,5 +494,85 @@ public class test {
         System.out.println(codeList);
     }
 
+    @Test
+    public void test16() {
+        List<UserInfo> userInfoList = new ArrayList<>();
+        /*userInfoList.add(new UserInfo("lil", 23));
+        userInfoList.add(new UserInfo("wewe", 21));*/
+        Map<String, UserInfo> map = userInfoList.stream().collect(Collectors.toMap(UserInfo::getName, Function.identity(), (a1, a2) -> a1));
+        List<String> stringList = new ArrayList<>();
+        stringList.add("lili");
+        stringList.forEach(s -> {
+            if (map.get(s) == null) {
+                UserInfo userInfo = new UserInfo(s, 23);
+                map.put(s, userInfo);
+            }
+        });
+        System.out.println(JsonUtil.toString(map));
+    }
 
+    @Test
+    public void test17() {
+        /*String time = LocalDateTime.of(2022, 11, 1, 10, 0,0).format(DateTimeFormatter.ofPattern(DateFormatEnum.YYYYMMDD_LINE.getCode()));
+        LocalDateTime time1 = LocalDate.parse(time, DateTimeFormatter.ofPattern(DateFormatEnum.YYYYMMDD_LINE.getCode())).atStartOfDay();
+        LocalDateTime now = LocalDateTime.now();
+        Long days = Duration.between(time1, now).toDays();
+        System.out.println(days);*/
+
+   /*     LocalDateTime l1 = LocalDateTime.of(2022,11, 2, 10, 0, 0);
+        LocalDate localDate1 = l1.toLocalDate();
+        LocalDate localDate2 = LocalDateTime.now().toLocalDate();
+        Long days = ChronoUnit.DAYS.between(localDate1, localDate2);
+        System.out.println("localDate1:"+ localDate1 +  days);*/
+
+        LocalDate nowDate = LocalDate.now();
+        LocalDate date1 = LocalDateTime.parse("2022-11-02 00:00:00", DateTimeFormatter.ofPattern(DateFormatEnum.YYYYMMDD_HHMMSS_LINE.getCode())).toLocalDate();
+        System.out.println(nowDate + "---" + date1);
+        if (nowDate.equals(date1)) {
+            System.out.println("true");
+        } else {
+            System.out.println("false");
+        }
+        LocalDate lastBizFullDate = LocalDate.parse("2022-11-01");
+        System.out.println(lastBizFullDate);
+        if (lastBizFullDate.equals(nowDate.minusDays(1L))) {
+            System.out.println("业务满仓");
+        } else {
+            System.out.println("非业务满仓");
+        }
+    }
+
+    @Test
+    public void test18() {
+        /*String orderDateJson = "[{\"date\":\"2022-10-30\",\"orderOrdCnt1d\":\"1\"},{\"date\":\"2022-10-15\",\"orderOrdCnt1d\":\"1\"},{\"date\":\"2022-10-28\",\"orderOrdCnt1d\":\"2\"},{\"date\":\"2022-10-29\",\"orderOrdCnt1d\":\"1\"},{\"date\":\"2022-10-24\",\"orderOrdCnt1d\":\"2\"},{\"date\":\"2022-10-31\",\"orderOrdCnt1d\":\"0\"},{\"date\":\"2022-10-21\",\"orderOrdCnt1d\":\"1\"},{\"date\":\"2022-10-27\",\"orderOrdCnt1d\":\"2\"},{\"date\":\"2022-11-01\",\"orderOrdCnt1d\":\"1\"},{\"date\":\"2022-10-25\",\"orderOrdCnt1d\":\"1\"}]";
+        List<OrderCountDateDTO> returnOrderCountDateList5Week = JsonUtil.toBean(JsonUtil.toString(orderDateJson), new com.fasterxml.jackson.core.type.TypeReference<List<OrderCountDateDTO>>() {
+        });
+        System.out.println(returnOrderCountDateList5Week);
+        List<OrderCountDateDTO> sorted = returnOrderCountDateList5Week.stream().sorted(Comparator.comparing(s -> LocalDate.parse(s.getDate()))).collect(Collectors.toList());
+        System.out.println("排序后" + sorted);
+
+        LocalDateTime init = LocalDateTime.of(1970, 1,1,0, 0, 0);
+        if (!init.equals(LocalDateTime.now())) {
+            System.out.println("不是默认时间");
+        }*/
+
+        String test = "";
+        if (StringUtils.isNotBlank(test)) {
+            System.out.println("你对了！");
+        } else {
+            System.out.println("你还是对了哈哈哈");
+        }
+    }
+
+    @Test
+    public void test19() {
+        System.out.println("开始测试");
+        new Thread(() -> {
+            try {
+                throw new NullPointerException();
+            } catch (Exception e) {
+                System.out.println("报错了123333");
+            }
+        }).start();
+    }
 }

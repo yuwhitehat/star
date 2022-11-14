@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
@@ -88,5 +89,21 @@ public class DateFormatUtil {
         }
         return Date.from(localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant());
     }
+
+    /**
+     * 计算两个日期之间相差的天数
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public static Long localDateToDay(LocalDateTime l1, LocalDateTime l2) {
+        if (l1 == null || l2 == null) {
+            return 0L;
+        }
+        return ChronoUnit.DAYS.between(l1.toLocalDate(), l2.toLocalDate());
+    }
+
+
+
 
 }
