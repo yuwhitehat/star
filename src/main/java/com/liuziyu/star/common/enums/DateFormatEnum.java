@@ -25,7 +25,9 @@ public enum DateFormatEnum {
     YYYYMMDD_HHMMSS_NO("yyyyMMdd HH:mm:ss"),
     YYYYMMDD_HHMMSS_SALSH("yyyy/MM/dd HH:mm:ss"),
     YYYYMMDDHHMMSS_LINE("yyyy-MM-ddHH:mm:ss"),
-    YYYYMMDDHHMMSS("yyyyMMddHHmmss"),;
+    YYYYMMDDHHMMSS("yyyyMMddHHmmss"),
+    YYYY_MM("YYYY-MM")
+    ;
 
 
     private String code;

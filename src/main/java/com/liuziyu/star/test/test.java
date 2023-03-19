@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -566,13 +568,60 @@ public class test {
 
     @Test
     public void test19() {
-        System.out.println("开始测试");
-        new Thread(() -> {
-            try {
-                throw new NullPointerException();
-            } catch (Exception e) {
-                System.out.println("报错了123333");
-            }
-        }).start();
+
+        String str = "2022-11-02 00:00:00";
+        String result = str.substring(0, str.indexOf('-', 5));
+        System.out.println(result);
     }
+
+    @Test
+    public void test20() {
+        String str = "0.4450";
+        String result = new BigDecimal(str).multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP).toPlainString() + "%";
+        String result1 = new BigDecimal(str).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).toPlainString() + "%";
+        System.out.println(result);
+        System.out.println(result1);
+    }
+
+    /**
+     * java 前缀匹配
+     */
+    @Test
+    public void test21() {
+        String warehouseWholeId = "10008-12333-111111-3333333-22222" + "-";
+        List<String> list = Lists.newArrayList();
+        list.add("10008-12333");
+        list.add("10008-12333-111222");
+        list.add("10008-12333-11111");
+        list.add("10008-12333-111111-3333333-22222");
+        list.add("10008-12333-111111-3333333-22222-11001");
+        list.forEach(peopleWholeId -> {
+            if (warehouseWholeId.startsWith(peopleWholeId + "-")) {
+                System.out.println(peopleWholeId);
+            }
+        });
+    }
+
+    /**
+     * java 截取字符串
+     */
+    @Test
+    public void test22() {
+        String warehouseWholeId = "10008-12333-111111-3333333-22222";
+        String subStr = warehouseWholeId.substring(warehouseWholeId.lastIndexOf('-') + 1);
+        System.out.println(subStr);
+    }
+
+    @Test
+    public void test23() {
+        Set<String> sets = new HashSet<>();
+        sets.add("222");
+        sets.add("3455");
+        sets.add("3456");
+
+
+        sets.remove("222");
+        System.out.println(sets);
+    }
+
 }
