@@ -1,9 +1,8 @@
 package com.liuziyu.star.test;
 
-import com.liuziyu.star.entity.streamtest.Customer;
-import com.liuziyu.star.entity.streamtest.Order;
-import com.liuziyu.star.entity.streamtest.OrderItem;
-import com.liuziyu.star.entity.streamtest.Product;
+import com.google.common.collect.Lists;
+import com.liuziyu.star.entity.streamtest.*;
+import com.liuziyu.star.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -232,15 +231,16 @@ public class StreamDetailTest {
 
     @Test
     public void skipLimit() {
-        orders.stream()
+     /*   orders.stream()
                 .sorted(comparing(Order::getPlacedAt))
                 .map(order -> order.getCustomerName() + "@" + order.getPlacedAt())
-                .limit(2).forEach(System.out::println);
+                .limit(2).forEach(System.out::println);*/
 
-        orders.stream()
+        List<String> results = orders.stream()
                 .sorted(comparing(Order::getPlacedAt))
                 .map(order -> order.getCustomerName() + "@" + order.getPlacedAt())
-                .skip(2).limit(2).forEach(System.out::println);
+                .skip(20).limit(2).collect(toList());
+        System.out.println(results);
     }
 
     @Test
@@ -280,4 +280,24 @@ public class StreamDetailTest {
                 .parallel().collect(new MostPopularCollector<>()).get(), is(2));
 
     }*/
+
+    @Test
+    public void test1() {
+        Product2 product1 = new Product2(1L, "橘子", 33.0, new Product(1L, "橘子", 33.0));
+        Product2 product2 = new Product2(5L, "橘子", 33.0, new Product(1L, "橘子", 33.0));
+        Product2 product3 = new Product2(2L, "香蕉", 33.0, new Product(1L, "橘子", 33.0));
+        Product2 product4 = new Product2(3L, "苹果", 33.0, new Product(1L, "橘子", 33.0));
+        Product2 product5 = new Product2(4L, "樱桃", 33.0, new Product(1L, "橘子", 33.0));
+
+        List<Product2> list = Lists.newArrayList();
+        list.add(product1);
+        list.add(product2);
+        list.add(product3);
+        list.add(product4);
+        list.add(product5);
+
+        List<Product2> distinctList = list.stream().distinct().collect(toList());
+        System.out.println(JsonUtil.toString(distinctList));
+    }
+
 }
