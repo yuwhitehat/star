@@ -5,11 +5,13 @@ import com.liuziyu.star.common.CommonConstant;
 import com.liuziyu.star.common.dto.ActLostCustomerParamDTO;
 import com.liuziyu.star.common.dto.UserInfo;
 import com.liuziyu.star.common.enums.DateFormatEnum;
+import com.liuziyu.star.entity.streamtest.Product;
 import com.liuziyu.star.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -20,6 +22,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class test {
+
+
     public static void main(String[] args) {
         int rangeStart = 30;
         int rangeEnd = 60;
