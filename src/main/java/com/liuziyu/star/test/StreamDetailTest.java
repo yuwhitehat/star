@@ -288,7 +288,7 @@ public class StreamDetailTest {
     @Test
     public void testDistinct() {
         Product2 product1 = new Product2(1L, "橘子", 33.0, new Product(1L, "橘子", 33.0));
-        Product2 product2 = new Product2(5L, "橘子", 33.0, new Product(1L, "橘子", 33.0));
+        Product2 product2 = new Product2(1L, "橘子", 33.0, new Product(1L, "橘子", 33.0));
         Product2 product3 = new Product2(2L, "香蕉", 33.0, new Product(1L, "橘子", 33.0));
         Product2 product4 = new Product2(3L, "苹果", 33.0, new Product(1L, "橘子", 33.0));
         Product2 product5 = new Product2(4L, "樱桃", 33.0, new Product(1L, "橘子", 33.0));
@@ -301,12 +301,13 @@ public class StreamDetailTest {
         list.add(product5);
 
         List<Product2> distinctList = list.stream().distinct().collect(toList());
+        System.out.println(JsonUtil.toString(list));
         System.out.println(JsonUtil.toString(distinctList));
     }
 
     /**
      * 如果不想重写equels,
-     * todo 如何根据某个字段去重对象 有待确认
+     * 如何根据某个字段去重对象
      */
     @Test
     public void test2() {
@@ -322,7 +323,8 @@ public class StreamDetailTest {
         product3List.add(p4);
         product3List.add(p5);
 
-        product3List.stream()
+        // 注意要重新赋值！！！因为stream流的各种操作不会改变list本身
+        product3List = product3List.stream()
                 .collect(Collectors.collectingAndThen(Collectors.toCollection(() ->
                         new TreeSet<>(Comparator.comparing(Product3::getPrice))), ArrayList::new));
         System.out.println(JsonUtil.toString(product3List));
