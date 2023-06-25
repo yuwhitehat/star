@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * desc
  *
@@ -34,4 +37,5 @@ public class UserController {
     public int wrong2(@RequestParam("name") String name) {
         return userService.createUserRight1(name);
     }
+
 }

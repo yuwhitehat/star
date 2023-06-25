@@ -5,13 +5,11 @@ import com.liuziyu.star.common.CommonConstant;
 import com.liuziyu.star.common.dto.ActLostCustomerParamDTO;
 import com.liuziyu.star.common.dto.UserInfo;
 import com.liuziyu.star.common.enums.DateFormatEnum;
-import com.liuziyu.star.entity.streamtest.Product;
 import com.liuziyu.star.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -626,6 +624,32 @@ public class test {
 
         sets.remove("222");
         System.out.println(sets);
+    }
+
+    /**
+     * 为啥list1指向了list后，修改list1，list也会变啊？？？？ 是啥原理
+     * chatGPT给的答案：
+     * 这段代码中，发生了引用赋值的操作。当你执行 List list1 = list; 这行代码时，
+     * 实际上是将 list 的引用赋值给了 list1。这意味着 list 和 list1 引用的是同一个对象，在内存中指向同一个位置。
+     * 因此，当你对 list1 执行 list1.add(new Object()); 这行代码时，实际上是对同一个对象进行修改。
+     * 由于 list 和 list1 引用的是同一个对象，所以无论你通过哪个引用进行修改，都会影响到这个对象本身。
+     * 因此，你会发现 list 和 list1 打印出来的结果都包含了新添加的元素。
+     *
+     * 如果你想要创建一个新的对象而不是共享同一个对象，可以使用 List list1 = new ArrayList<>(list); 来创建 list1。
+     * 这样就会复制 list 中的元素到一个新的 ArrayList 对象中，而不是共享同一个对象。这样修改 list1 就不会影响到 list。
+     */
+    @Test
+    public void test24() {
+        List<String> list = new ArrayList<>();
+        list.add("222");
+        list.add("3455");
+        list.add("3456");
+        System.out.println(list);
+        List list1 = list;
+        // 为啥list1指向了list后，修改list1，list也会变啊？？？？ 是啥原理
+        list1.add(new Object());
+        System.out.println(list);
+        System.out.println(list1);
     }
 
 }
