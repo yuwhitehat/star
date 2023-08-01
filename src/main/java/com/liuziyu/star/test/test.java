@@ -5,6 +5,7 @@ import com.liuziyu.star.common.CommonConstant;
 import com.liuziyu.star.common.dto.ActLostCustomerParamDTO;
 import com.liuziyu.star.common.dto.UserInfo;
 import com.liuziyu.star.common.enums.DateFormatEnum;
+import com.liuziyu.star.entity.TestEntity;
 import com.liuziyu.star.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -650,6 +651,134 @@ public class test {
         list1.add(new Object());
         System.out.println(list);
         System.out.println(list1);
+    }
+
+    @Test
+    public void test25() {
+        // 创建一个包含一些元素的列表
+        List<String> dataList = new ArrayList<>();
+        dataList.add("元素1");
+        dataList.add("元素2");
+        dataList.add("元素3");
+        dataList.add("元素4");
+        dataList.add("元素5");
+        dataList.add("元素6");
+        dataList.add("元素7");
+        dataList.add("元素8");
+        dataList.add("元素9");
+        dataList.add("元素10");
+
+        // 指定每个批次的大小
+        int batchSize = 3;
+
+        // 获取迭代器
+        Iterator<String> iterator = dataList.iterator();
+
+        // 处理分批数据
+        while (iterator.hasNext()) {
+            List<String> batch = new ArrayList<>();
+
+            // 从迭代器中获取指定数量的元素
+            for (int i = 0; i < batchSize && iterator.hasNext(); i++) {
+                batch.add(iterator.next());
+            }
+
+            // 处理当前批次的数据
+            processBatch(batch);
+        }
+    }
+
+    private void processBatch(List<String> batch) {
+        System.out.println("开始处理----");
+    }
+
+    @Test
+    public void test26() {
+        List<String> dateList = Lists.newArrayList();
+        dateList.add("2021-12");
+        dateList.add("2022-03");
+        dateList.add("2021-10");
+        dateList.add("2022-07");
+        dateList.add("2019-11");
+        dateList.add("2022-05");
+        dateList.add("2022-04");
+        dateList.add("2022-04");
+        dateList.add("2019-11");
+        dateList.add("2019-11");
+        dateList.add("2022-05");
+        dateList.add("2023-05");
+        dateList.add("2023-05");
+
+        Map<String, Long> yearCountMap = dateList.stream()
+                .map(date -> date.split("-")[0])  // 获取"-"前面的字符串作为分组依据
+                .collect(Collectors.groupingBy(prefix -> prefix, Collectors.counting()));
+
+        Map<String, List<String>> groupedMap = dateList.stream()
+                .collect(Collectors.groupingBy(date -> date.split("-")[0]));  // 根据前缀分组
+
+        Map<String, Map<String, Long>> monthCountMap = dateList.stream()
+                .collect(Collectors.groupingBy(date -> date.split("-")[0],  // 外层分组：前缀
+                        Collectors.groupingBy(date -> date.split("-")[1],  // 内层分组：后缀
+                                Collectors.counting())));  // 统计数量
+        List<Long> countList = monthCountMap.values().stream().flatMap(innerMap -> innerMap.values().stream()).collect(Collectors.toList());
+
+        int n = BigDecimal.valueOf(countList.size()).multiply(BigDecimal.valueOf(0.2)).setScale(0, RoundingMode.HALF_UP).intValue();
+        List<Long> countOfFirstNList = getCountOfFirstNList(n, countList);
+
+        //System.out.println(yearCountMap);
+        //System.out.println(groupedMap);
+        System.out.println(JsonUtil.toString(monthCountMap));
+        System.out.println(JsonUtil.toString(countOfFirstNList));
+    }
+
+    /**
+     * 组装前N个数值字段名称
+     * @param n =所有有值的月份格子总数*20%后取整数（四舍五入）
+     * @param countList 所有数值
+     */
+    private List<Long> getCountOfFirstNList(int n, List<Long> countList) {
+        System.out.println("n的值为" + n);
+        if(n == 0) {
+            return Lists.newArrayList();
+        }
+        // 按照从大到小排序
+        List<Long> sortedList = countList.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        System.out.println("倒序排序后的数值集合:" + JsonUtil.toString(sortedList));
+        /*if (n == 1) {
+            List<Long> tempList = Lists.newArrayList();
+            tempList.add(sortedList.get(0));
+            int index = 1;
+            while (sortedList.size() > index && sortedList.get(index).equals(sortedList.get(index - 1))) {
+                tempList.add(sortedList.get(index));
+                index++;
+            }
+            if (tempList.size() > 2) {
+                return Lists.newArrayList();
+            } else {
+                return tempList;
+            }
+        }*/
+        List<Long> resultList = sortedList.stream().limit(n).collect(Collectors.toList());
+        System.out.println("倒序排序后取前N个数值集合:" + JsonUtil.toString(resultList));
+        // 如果第N个值和第N+1个值相等，则N+1也要；如果和第N个值相等的值大于1个，则第N个数值也不要
+        Long countOfN = resultList.get(n - 1);
+        int equalNCount = (int) sortedList.stream().filter(s -> s.equals(countOfN)).count();
+        if (equalNCount > 2) {
+            return resultList.stream().filter(r -> !r.equals(countOfN)).collect(Collectors.toList());
+        }
+        return resultList;
+    }
+
+    @Test
+    public void test27() {
+        List<UserInfo> userInfoList = new ArrayList<>();
+        userInfoList.add(new UserInfo("ww", 22));
+        userInfoList.add(new UserInfo("er", 44));
+        TestEntity test = new TestEntity();
+        test.setCount(2);
+        TestEntity.Param param = new TestEntity.Param();
+        param.setParamList(userInfoList);
+        System.out.println(JsonUtil.toString(param));
     }
 
 }
