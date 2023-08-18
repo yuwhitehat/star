@@ -789,11 +789,8 @@ public class test {
     /**
      * 根据经纬度计算距离比较
      * 由于业务需求里是小范围内距离计算，所以这里举的例子都比较近
-     * 时间差比较结果：
-     * (修改经纬度并试了很多次，结果总是如下，但按照常理来说精度越低的越快才对，也就是Sphere会相对来说快一点，结果它总是最慢，有时慢的离谱；
-     * 反余弦计算公式和WGS84有时差不多快，但更多时候WGS84还是更快，且WGS84精度多一位)
-     * WGS84<反余弦<Haversine<Sphere
-     *
+     * 总体来说，使用反余弦函数计算比使用org.gavaghan.geodesy计算速度要快一点点点点（差别非常小）
+     * 如果是计算小范围内的距离，且对精度没啥要求时，那我会选择反余弦的方式
      */
     @Test
     public void test28() {
@@ -803,28 +800,28 @@ public class test {
         double lat2 = 40.714039; // 纬度2
         double lon2 = -74.001892; // 经度2
 
+        /**
+         * 这两个方法同一个原理，谁在后面，谁用的时间少
+         */
         calculateHaversineDistance(lat1, lon1, lat2, lon2);
-
         calculateDistance(lat1, lon1, lat2, lon2);
 
-        calculateGeotoolsDistance(lat1, lon1, lat2, lon2);
+        /**
+         * 这俩使用的坐标系不同，但也是谁在后面，谁用的时间少
+         */
+        calculateSphereDistance(lat1, lon1, lat2, lon2);
+        calculateWGS84Distance(lat1, lon1, lat2, lon2);
     }
 
     /**
-     * org.gavaghan.geodesy
-     * 使用Sphere坐标系和WGS84坐标系做了一个比对
-     * GPT的解释：
-     * Sphere坐标系假设地球是一个完美的球体，忽略了地球的椭球体形状，计算较快，精度较低，适用于计算小范围内的距离；
-     * WGS84坐标系是一种用于表示地球椭球体形状的坐标系，被广泛用于GPS和地理信息系统（GIS），精度较高，适用于计算大范围和高纬度区域的距离。
+     * org.gavaghan.geodesy Sphere坐标系
      *
-     * 但是在计算时间差时，发现使用WGS84坐标系总是最快的那一个，所以？？？
      * @param lat1
      * @param lon1
      * @param lat2
      * @param lon2
-     * @return
      */
-    private void calculateGeotoolsDistance(double lat1, double lon1, double lat2, double lon2) {
+    private void calculateSphereDistance(double lat1, double lon1, double lat2, double lon2) {
         // Sphere坐标系
         long startTime = System.nanoTime();
         GlobalCoordinates source = new GlobalCoordinates(lat1, lon1);
@@ -835,8 +832,22 @@ public class test {
         System.out.println("【Sphere】Distance between the two points: " + meter1 + " m");
         long endTime = System.nanoTime();
         System.out.println("【Sphere】时间差：" + (endTime - startTime) + "纳秒");
+    }
 
-        // WGS84坐标系
+    /**
+     * org.gavaghan.geodesy
+     * WGS84坐标系
+     * GPT的解释：
+     * Sphere坐标系假设地球是一个完美的球体，忽略了地球的椭球体形状，计算较快，精度较低，适用于计算小范围内的距离；
+     * WGS84坐标系是一种用于表示地球椭球体形状的坐标系，被广泛用于GPS和地理信息系统（GIS），精度较高，适用于计算大范围和高纬度区域的距离。
+     *
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    private void calculateWGS84Distance(double lat1, double lon1, double lat2, double lon2) {
         long startTime2 = System.nanoTime();
         GlobalCoordinates source2 = new GlobalCoordinates(lat1, lon1);
         GlobalCoordinates target2 = new GlobalCoordinates(lat2, lon2);
