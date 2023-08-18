@@ -8,6 +8,10 @@ import com.liuziyu.star.common.enums.DateFormatEnum;
 import com.liuziyu.star.entity.TestEntity;
 import com.liuziyu.star.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.gavaghan.geodesy.Ellipsoid;
+import org.gavaghan.geodesy.GeodeticCalculator;
+import org.gavaghan.geodesy.GeodeticCurve;
+import org.gavaghan.geodesy.GlobalCoordinates;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
@@ -635,7 +639,7 @@ public class test {
      * 因此，当你对 list1 执行 list1.add(new Object()); 这行代码时，实际上是对同一个对象进行修改。
      * 由于 list 和 list1 引用的是同一个对象，所以无论你通过哪个引用进行修改，都会影响到这个对象本身。
      * 因此，你会发现 list 和 list1 打印出来的结果都包含了新添加的元素。
-     *
+     * <p>
      * 如果你想要创建一个新的对象而不是共享同一个对象，可以使用 List list1 = new ArrayList<>(list); 来创建 list1。
      * 这样就会复制 list 中的元素到一个新的 ArrayList 对象中，而不是共享同一个对象。这样修改 list1 就不会影响到 list。
      */
@@ -733,12 +737,13 @@ public class test {
 
     /**
      * 组装前N个数值字段名称
-     * @param n =所有有值的月份格子总数*20%后取整数（四舍五入）
+     *
+     * @param n         =所有有值的月份格子总数*20%后取整数（四舍五入）
      * @param countList 所有数值
      */
     private List<Long> getCountOfFirstNList(int n, List<Long> countList) {
         System.out.println("n的值为" + n);
-        if(n == 0) {
+        if (n == 0) {
             return Lists.newArrayList();
         }
         // 按照从大到小排序
@@ -779,6 +784,132 @@ public class test {
         TestEntity.Param param = new TestEntity.Param();
         param.setParamList(userInfoList);
         System.out.println(JsonUtil.toString(param));
+    }
+
+    /**
+     * 根据经纬度计算距离比较
+     * 由于业务需求里是小范围内距离计算，所以这里举的例子都比较近
+     * 时间差比较结果：
+     * (修改经纬度并试了很多次，结果总是如下，但按照常理来说精度越低的越快才对，也就是Sphere会相对来说快一点，结果它总是最慢，有时慢的离谱；
+     * 反余弦计算公式和WGS84有时差不多快，但更多时候WGS84还是更快，且WGS84精度多一位)
+     * WGS84<反余弦<Haversine<Sphere
+     *
+     */
+    @Test
+    public void test28() {
+        double lat1 = 40.7128; // 纬度1
+        double lon1 = -74.0060; // 经度1
+
+        double lat2 = 40.714039; // 纬度2
+        double lon2 = -74.001892; // 经度2
+
+        calculateHaversineDistance(lat1, lon1, lat2, lon2);
+
+        calculateDistance(lat1, lon1, lat2, lon2);
+
+        calculateGeotoolsDistance(lat1, lon1, lat2, lon2);
+    }
+
+    /**
+     * org.gavaghan.geodesy
+     * 使用Sphere坐标系和WGS84坐标系做了一个比对
+     * GPT的解释：
+     * Sphere坐标系假设地球是一个完美的球体，忽略了地球的椭球体形状，计算较快，精度较低，适用于计算小范围内的距离；
+     * WGS84坐标系是一种用于表示地球椭球体形状的坐标系，被广泛用于GPS和地理信息系统（GIS），精度较高，适用于计算大范围和高纬度区域的距离。
+     *
+     * 但是在计算时间差时，发现使用WGS84坐标系总是最快的那一个，所以？？？
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    private void calculateGeotoolsDistance(double lat1, double lon1, double lat2, double lon2) {
+        // Sphere坐标系
+        long startTime = System.nanoTime();
+        GlobalCoordinates source = new GlobalCoordinates(lat1, lon1);
+        GlobalCoordinates target = new GlobalCoordinates(lat2, lon2);
+        //创建GeodeticCalculator，调用计算方法，传入坐标系、经纬度用于计算距离
+        GeodeticCurve geoCurve = new GeodeticCalculator().calculateGeodeticCurve(Ellipsoid.Sphere, source, target);
+        double meter1 = geoCurve.getEllipsoidalDistance();
+        System.out.println("【Sphere】Distance between the two points: " + meter1 + " m");
+        long endTime = System.nanoTime();
+        System.out.println("【Sphere】时间差：" + (endTime - startTime) + "纳秒");
+
+        // WGS84坐标系
+        long startTime2 = System.nanoTime();
+        GlobalCoordinates source2 = new GlobalCoordinates(lat1, lon1);
+        GlobalCoordinates target2 = new GlobalCoordinates(lat2, lon2);
+        GeodeticCurve geoCurve2 = new GeodeticCalculator().calculateGeodeticCurve(Ellipsoid.WGS84, source2, target2);
+        double meter2 = geoCurve2.getEllipsoidalDistance();
+        System.out.println("【WGS84】Distance between the two points: " + meter2 + " m");
+        long endTime2 = System.nanoTime();
+        System.out.println("【WGS84】时间差：" + (endTime2 - startTime2) + "纳秒");
+    }
+
+    /**
+     * 反余弦计算方式
+     *
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    private void calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        long startTime = System.nanoTime();
+        double earthRadius = 6371000; // 地球半径，单位：m
+        // 经纬度（角度）转弧度。弧度用作参数，以调用Math.cos和Math.sin
+        double radiansAX = Math.toRadians(lon1); // A经弧度
+        double radiansAY = Math.toRadians(lat1); // A纬弧度
+        double radiansBX = Math.toRadians(lon2); // B经弧度
+        double radiansBY = Math.toRadians(lat2); // B纬弧度
+
+        // 公式中“cosβ1cosβ2cos（α1-α2）+sinβ1sinβ2”的部分，得到∠AOB的cos值
+        double cos = Math.cos(radiansAY) * Math.cos(radiansBY) * Math.cos(radiansAX - radiansBX)
+                + Math.sin(radiansAY) * Math.sin(radiansBY);
+        // System.out.println("cos = " + cos); // 值域[-1,1]
+        double acos = Math.acos(cos); // 反余弦值
+//        System.out.println("acos = " + acos); // 值域[0,π]
+//        System.out.println("∠AOB = " + Math.toDegrees(acos)); // 球心角 值域[0,180]
+        System.out.println("【反余弦】Distance between the two points: " + earthRadius * acos + " m");
+        long endTime = System.nanoTime();
+        System.out.println("【反余弦】时间差：" + (endTime - startTime) + "纳秒");
+    }
+
+    /**
+     * Haversine公式来计算两个经纬度之间的距离 在小范围内是准确的
+     * 其实也是用到了反余弦函数
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    private void calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        long startTime = System.nanoTime();
+        double earthRadius = 6371000; // 地球半径，单位：m
+        // 将经纬度转换为弧度
+        double latRad1 = Math.toRadians(lat1);
+        double lonRad1 = Math.toRadians(lon1);
+        double latRad2 = Math.toRadians(lat2);
+        double lonRad2 = Math.toRadians(lon2);
+
+        // 计算差值
+        double deltaLat = latRad2 - latRad1;
+        double deltaLon = lonRad2 - lonRad1;
+
+        // Haversine公式计算距离
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+                + Math.cos(latRad1) * Math.cos(latRad2)
+                * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // 计算距离
+        double distance = earthRadius * c;
+        System.out.println("【Haversine】Distance between the two points: " + distance + " m");
+        long endTime = System.nanoTime();
+        System.out.println("【Haversine】时间差：" + (endTime - startTime) + "纳秒");
     }
 
 }
